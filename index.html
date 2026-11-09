@@ -22,9 +22,9 @@
 <article class="card"><div class="cardhead">YOUR MATERIALS <span>▣</span></div><h2>All in one place.</h2><p>Keep your books, workbook units, audio, and answer keys organised.</p><button class="btn" data-open="library">Visit library ↗</button></article>
 <article class="card"><div class="cardhead">YOUR PROGRESS <span>↗</span></div><h2>Every step matters.</h2><p>See your completed practice and collected stars.</p><button class="btn" data-open="progress">View progress ↗</button></article></div>
 <h2 class="section-title">Choose your focus</h2><div class="quick"><button data-open="reading"><b>Reading</b><span>Understand beyond the words</span></button><button data-open="listening"><b>Listening</b><span>Catch every nuance</span></button><button data-open="writing"><b>Writing</b><span>Express ideas precisely</span></button><button data-open="speaking"><b>Speaking</b><span>Speak with confidence</span></button></div></section>
-<section class="page" id="practice"><div class="pagehead"><div class="kicker">EXAM TRAINING</div><h1>Exam Practice</h1><p class="lead">Choose a task, answer, check, read the explanations — and try again whenever you like.</p></div>
-<div class="tabs" id="exList"></div><div class="panel" id="exPanel"></div>
-<div class="notice">These are original demonstration tasks. Real workbook units will appear here once we import your answer keys.</div></section>
+<section class="page" id="practice"><div class="pagehead"><div class="kicker">EXAM TRAINING</div><h1>Exam Practice</h1><p class="lead">Choose a unit and a task, enter your answers, check them — and try again whenever you like.</p></div>
+<select class="field" id="exGroup" style="width:auto;min-width:220px;margin:0 0 4px" aria-label="Choose unit"></select><div class="tabs" id="exList"></div><div class="panel" id="exPanel"></div>
+<div class="notice">Workbook tasks work as an <b>answer sheet</b>: do the exercise in your Workbook PDF, then enter your answers here. The site checks them against the official key and keeps your results. Demo tasks are original examples.</div></section>
 <section class="page" id="vocabulary"><div class="pagehead"><div class="kicker">BUILD YOUR WORD POWER</div><h1>Vocabulary</h1><p class="lead">Your own growing collection of C2 words and expressions.</p></div>
 <div class="panel"><h2>Add a new expression</h2><div class="two"><div><label>Word or phrase</label><input class="field" id="newWord" placeholder="e.g. take something for granted"></div><div><label>Meaning / translation</label><input class="field" id="newMeaning" placeholder="e.g. считать само собой разумеющимся"></div></div><button class="btn" id="addWord">Save to my word bank +</button></div>
 <div class="panel"><div class="cardhead">MY WORD BANK <span id="wordCount">0 ITEMS</span></div><div id="wordList"></div></div></section>
@@ -44,6 +44,8 @@
   <img class="mascot-avatar" id="mascotAvatar" src="assets/mascot.png" alt="Your Get that C2 mascot" title="Click me for a little encouragement">
 </div>
 
+<script src="js/config.js"></script>
 <script src="data/exercises.js"></script>
+<script src="data/ready-for-c2.js"></script>
 <script src="js/engine.js"></script>
 <script src="js/app.js"></script></body></html>

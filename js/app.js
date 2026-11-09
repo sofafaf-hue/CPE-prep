@@ -33,12 +33,22 @@ $('#newPrompt').onclick=()=>{$('#speaking .panel p').textContent=prompts[Math.fl
 $('#exportData').onclick=()=>{let data={exported:new Date().toISOString(),words,stars,tasks,writing:store.get('writing',''),history,done};let blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='get-that-c2-backup.json';a.click();URL.revokeObjectURL(a.href)};
 
 /* ---- Exercise engine hookup ---- */
+const CFG=window.APP_CONFIG||{};
+EXERCISES.forEach(e=>{if(e.track&&CFG.supabaseUrl)e.audio=`${CFG.supabaseUrl}/storage/v1/object/public/${CFG.audioBucket}/${encodeURIComponent(CFG.audioPattern.replace('{n}',e.track))}`});
 const history=store.get('history',[]),done=store.get('done',{});
-function drawExList(cur){$('#exList').innerHTML=EXERCISES.map((e,i)=>`<button class="tab ${i===cur?'active':''}" data-ex="${i}">${escapeHtml(e.title)}${done[e.id]?' ✓':''}</button>`).join('');$$('[data-ex]').forEach(b=>b.onclick=()=>openEx(+b.dataset.ex))}
+const groups=[...new Set(EXERCISES.map(e=>e.group||'demo'))].sort((x,y)=>(x==='demo')-(y==='demo')||(+x)-(+y));
+let curGroup=store.get('exGroup',groups[0]);if(!groups.includes(curGroup))curGroup=groups[0];
+const groupName=g=>g==='demo'?'Demo tasks':'Ready for C2 · Unit '+g;
+function drawExList(cur){
+ $('#exGroup').innerHTML=groups.map(g=>`<option value="${g}" ${g===curGroup?'selected':''}>${groupName(g)}</option>`).join('');
+ $('#exList').innerHTML=EXERCISES.map((e,i)=>[e,i]).filter(([e])=>(e.group||'demo')===curGroup).map(([e,i])=>`<button class="tab ${i===cur?'active':''}" data-ex="${i}">${escapeHtml(e.short||e.title)}${done[e.id]>=8?' ✓':''}</button>`).join('');
+ $$('[data-ex]').forEach(b=>b.onclick=()=>openEx(+b.dataset.ex))}
 function openEx(i){drawExList(i);Engine.mount($('#exPanel'),EXERCISES[i],r=>{
  history.unshift({id:r.id,title:r.title,type:r.type,date:new Date().toISOString(),score:r.score,total:r.total,wrong:r.wrong});history.length=Math.min(history.length,300);store.set('history',history);
- if(r.perfect&&!done[r.id]){done[r.id]=1;stars+=10;tasks++;store.set('done',done);store.set('stars',stars);store.set('tasks',tasks);drawExList(i);mascotSay('Flawless! +10 stars for you. I’m so proud! ✨','happy',7000)}
- else if(r.perfect)mascotSay('Perfect again — lovely and consistent!','happy',6000);
- else mascotSay(`${r.score}/${r.total}. Read the notes under each mistake, then try again!`,'think',7000);
+ const prev=+done[r.id]||0,now=Math.round(10*r.score/r.total),earn=Math.max(0,now-prev);
+ if(earn>0){if(!prev)tasks++;done[r.id]=now;stars+=earn;store.set('done',done);store.set('stars',stars);store.set('tasks',tasks);drawExList(i)}
+ if(r.perfect)mascotSay(earn?`Flawless! +${earn} stars for you. I’m so proud! ✨`:'Perfect again — lovely and consistent!','happy',7000);
+ else mascotSay(`${r.score}/${r.total}${earn?` · +${earn} ✦`:''}. Check the answers marked ✗, then try again!`,'think',7000);
  refresh()})}
-openEx(0);
+$('#exGroup').onchange=e=>{curGroup=e.target.value;store.set('exGroup',curGroup);openEx(EXERCISES.findIndex(x=>(x.group||'demo')===curGroup))};
+openEx(EXERCISES.findIndex(x=>(x.group||'demo')===curGroup));
